@@ -20,7 +20,7 @@ import (
 	"os"
 	"runtime/debug"
 	"time"
-
+	"encoding/hex"
 	"github.com/go-piv/piv-go/piv"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
@@ -193,6 +193,21 @@ func runSetup(yk *piv.YubiKey) {
 	fmt.Println(`set the SSH_AUTH_SOCK environment variable, and test with "ssh-add -L"`)
 	fmt.Println("")
 	fmt.Println("💭 Remember: everything breaks, have a backup plan for when this YubiKey does.")
+}
+
+func getManagementKey(yk *piv.YubiKey) {
+	fmt.Print("Enter PIN: ")
+	pin, err := term.ReadPassword(int(os.Stdin.Fd()))
+	fmt.Print("\n")
+	if err != nil {
+		log.Fatalln("Failed to read PIN:", err)
+	}
+	meta, err := yk.Metadata(string(pin))
+	if err != nil {
+		log.Fatalln("Failed to get key metadata: ", err)
+	}
+
+	fmt.Println(hex.EncodeToString(meta.ManagementKey[:]))
 }
 
 func randomSerialNumber() *big.Int {

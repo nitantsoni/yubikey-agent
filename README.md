@@ -138,13 +138,17 @@ ykman piv unblock-pin
 
 If the PUK is also entered incorrectly three times, the key is permanently irrecoverable. The YubiKey PIV applet can be reset with `yubikey-agent --setup --really-delete-all-piv-keys`.
 
+
 ### Manual setup and technical details
 
 `yubikey-agent` only officially supports YubiKeys set up with `yubikey-agent -setup`.
 
 In practice, any PIV token with an RSA or ECDSA P-256 key and certificate in the Authentication slot should work, with any PIN and touch policy. Simply skip the setup step and use `ssh-add -L` to view the public key.
 
-`yubikey-agent -setup` generates a random Management Key and [stores it in PIN-protected metadata](https://pkg.go.dev/github.com/go-piv/piv-go/piv?tab=doc#YubiKey.SetMetadata).
+### Retrieving the management key
+
+`yubikey-agent -setup` generates a random Management Key and [stores it in PIN-protected metadata](https://pkg.go.dev/github.com/go-piv/piv-go/piv?tab=doc#YubiKey.SetMetadata). If you need to retrieve it (for example, to modify the pin/puk retries with `ykman`, you can do so with `yubikey-agent -get-management-key`.
+
 
 ### Alternatives
 
